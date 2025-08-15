@@ -1,107 +1,269 @@
-// Protótipo de rede anônima com visual roxo/aveludado
-import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { v4 as uuidv4 } from 'uuid';
-import { motion } from 'framer-motion';
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garantir Vaga do Project</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', monospace;
+        }
 
-const hashtagsPermitidas = [
-  '#bonita', '#estranho', '#engraçado', '#feio', '#popular', '#estiloso', '#diferente'
-];
+        body {
+            background-color: #0a0a0a;
+            color: #00ff00;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-const fotosFake = [
-  {
-    id: 'foto1',
-    url: 'https://placekitten.com/400/500',
-    hashtags: ['#bonita'],
-    saves: 4,
-  },
-  {
-    id: 'foto2',
-    url: 'https://placekitten.com/401/500',
-    hashtags: ['#estranho', '#engraçado'],
-    saves: 2,
-  },
-];
+        .container {
+            background-color: #111;
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
 
-export default function App() {
-  const [usuario, setUsuario] = useState('');
-  const [indexFoto, setIndexFoto] = useState(0);
-  const [comentario, setComentario] = useState([]);
+        .led-strip {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, 
+                #ff0000, #ff7f00, #ffff00, #00ff00, 
+                #0000ff, #4b0082, #9400d3, #ff0000);
+            background-size: 800% 100%;
+            animation: ledAnimation 5s linear infinite;
+        }
 
-  useEffect(() => {
-    const novoUsuario = localStorage.getItem('anonUser') || `@user${Math.floor(Math.random() * 1000000)}`;
-    localStorage.setItem('anonUser', novoUsuario);
-    setUsuario(novoUsuario);
-  }, []);
+        @keyframes ledAnimation {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
 
-  const fotoAtual = fotosFake[indexFoto];
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00ff00;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 24px;
+            position: relative;
+            padding-top: 20px;
+        }
 
-  const handleHashtag = (tag) => {
-    if (comentario.includes(tag)) {
-      setComentario(comentario.filter((t) => t !== tag));
-    } else if (comentario.length < 3) {
-      setComentario([...comentario, tag]);
-    }
-  };
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-  const enviarComentario = () => {
-    alert(`@${usuario} comentou ${comentario.join(', ')} na foto ${fotoAtual.id}`);
-    setComentario([]);
-  };
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
 
-  const salvarFoto = () => {
-    alert(`@${usuario} salvou a foto ${fotoAtual.id}`);
-  };
+        input {
+            width: 100%;
+            padding: 12px;
+            background-color: #222;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            border-radius: 5px;
+            font-size: 16px;
+        }
 
-  const proximaFoto = () => {
-    setComentario([]);
-    setIndexFoto((prev) => (prev + 1) % fotosFake.length);
-  };
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
 
-  return (
-    <div className="flex h-screen w-full bg-gradient-to-br from-purple-900 via-black to-black text-white relative">
-      <div className="flex-1 flex flex-col items-center justify-center p-4">
-        <motion.img
-          key={fotoAtual.id}
-          src={fotoAtual.url}
-          className="rounded-2xl w-[400px] h-[500px] object-cover shadow-lg shadow-purple-900"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        />
-        <div className="mt-4 flex flex-wrap gap-2">
-          {hashtagsPermitidas.map((tag) => (
-            <Button
-              key={tag}
-              variant={comentario.includes(tag) ? 'default' : 'outline'}
-              className={comentario.includes(tag) ? 'bg-purple-700 text-white' : 'border-purple-600 text-purple-300 hover:bg-purple-900'}
-              onClick={() => handleHashtag(tag)}
-            >
-              {tag}
-            </Button>
-          ))}
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .confirm-btn {
+            background-color: #00aa00;
+            color: white;
+        }
+
+        .confirm-btn:hover {
+            background-color: #00cc00;
+        }
+
+        .copy-btn {
+            background-color: #0055aa;
+            color: white;
+        }
+
+        .copy-btn:hover {
+            background-color: #0077cc;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #222;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            position: relative;
+            min-height: 100px;
+        }
+
+        .result-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #00ff00;
+        }
+
+        .result-code {
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            background-color: #111;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .blink {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .instructions {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: rgba(0, 255, 0, 0.1);
+            border-left: 4px solid #00ff00;
+            border-radius: 5px;
+        }
+
+        .print-instruction {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #ff5555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="led-strip"></div>
+        <h1>Garantir Vaga do Project</h1>
+        
+        <div class="form-group">
+            <label for="name">Nome Completo:</label>
+            <input type="text" id="name" placeholder="Digite seu nome completo">
         </div>
-        <div className="mt-2 flex gap-2">
-          <Button className="bg-purple-700 hover:bg-purple-800" onClick={enviarComentario}>Comentar #{comentario.length}/3</Button>
-          <Button className="bg-purple-600 hover:bg-purple-700" onClick={salvarFoto}>Salvar</Button>
-          <Button className="bg-purple-500 hover:bg-purple-600" onClick={proximaFoto}>Próxima</Button>
+        
+        <div class="form-group">
+            <label for="school">Escola:</label>
+            <input type="text" id="school" placeholder="Digite o nome da sua escola">
         </div>
-      </div>
-
-      {/* Rankings agora no canto inferior esquerdo */}
-      <div className="absolute bottom-4 left-4 bg-gradient-to-b from-black via-purple-900 to-black p-4 rounded-xl shadow-lg w-[260px] max-h-[70vh] overflow-y-auto border border-purple-800">
-        <h2 className="text-xl font-bold mb-2 text-purple-300">Rankings</h2>
-        {hashtagsPermitidas.map((tag) => (
-          <Card key={tag} className="mb-2 bg-purple-950 border border-purple-800">
-            <CardContent>
-              <p className="text-sm font-semibold text-purple-200">{tag}</p>
-              <img src={fotosFake[Math.floor(Math.random() * fotosFake.length)].url} className="rounded-xl mt-1 w-full" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+        
+        <div class="form-group">
+            <label for="age">Idade:</label>
+            <input type="number" id="age" placeholder="Digite sua idade">
+        </div>
+        
+        <div class="form-group">
+            <label for="instagram">Instagram:</label>
+            <input type="text" id="instagram" placeholder="Digite seu @ do Instagram (com @)">
+        </div>
+        
+        <div class="buttons">
+            <button class="confirm-btn" id="confirmBtn">Confirmar</button>
+            <button class="copy-btn" id="copyBtn">Copiar Código</button>
+        </div>
+        
+        <div class="result" id="result" style="display: none;">
+            <div class="result-title">SEU CÓDIGO DE CONFIRMAÇÃO:</div>
+            <div class="result-code" id="resultCode"></div>
+        </div>
+        
+        <div class="instructions">
+            <p>Preencha todos os campos corretamente e clique em <strong>Confirmar</strong> para gerar seu código único.</p>
+            <p>Depois de gerar o código, clique em <strong>Copiar Código</strong> para salvá-lo.</p>
+        </div>
+        
+        <div class="print-instruction">
+            <p class="blink">⚠️ TIRE PRINT DESTE FORMULÁRIO E MANDE NO NOSSO PV APÓS PREENCHER NÃO FIQUE DE FORA!⚠️</p>
+        </div>
     </div>
-  );
-}
+
+    <script>
+        document.getElementById('confirmBtn').addEventListener('click', function() {
+            const name = document.getElementById('name').value.trim();
+            const school = document.getElementById('school').value.trim();
+            const age = document.getElementById('age').value.trim();
+            let instagram = document.getElementById('instagram').value.trim();
+            
+            // Verifica se todos os campos foram preenchidos
+            if (!name || !school || !age || !instagram) {
+                alert('Por favor, preencha todos os campos!');
+                return;
+            }
+            
+            // Adiciona @ se o usuário não colocou
+            if (!instagram.startsWith('@')) {
+                instagram = '@' + instagram;
+            }
+            
+            // Remove caracteres especiais do nome para o código
+            const cleanName = name.replace(/[^a-zA-Z]/g, '').toUpperCase();
+            const cleanSchool = school.replace(/[^a-zA-Z]/g, '').toUpperCase();
+            const cleanInsta = instagram.replace(/[^a-zA-Z0-9_]/g, '');
+            
+            // Gera código alfanumérico único
+            const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
+            const code = `${cleanName.substring(0, 3)}${age}${cleanSchool.substring(0, 3)}${cleanInsta.substring(0, 4)}${randomPart}`;
+            
+            // Exibe o resultado
+            document.getElementById('resultCode').textContent = code;
+            document.getElementById('result').style.display = 'block';
+            
+            // Rola a página até o resultado
+            document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const code = document.getElementById('resultCode').textContent;
+            
+            if (!code) {
+                alert('Gere um código primeiro clicando em Confirmar!');
+                return;
+            }
+            
+            navigator.clipboard.writeText(code)
+                .then(() => {
+                    alert('Código copiado para a área de transferência!');
+                })
+                .catch(err => {
+                    console.error('Erro ao copiar: ', err);
+                    alert('Não foi possível copiar o código. Tente novamente.');
+                });
+        });
+    </script>
+</body>
+</html>
